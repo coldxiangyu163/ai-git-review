@@ -7,7 +7,7 @@
     "ai-review": "./bin/ai-review.js"
   },
   "scripts": {
-    "test": "node test/git.test.js && node test/llm.test.js",
+    "test": "node test/git.test.js && node test/llm.test.js && node test/fixer.test.js",
     "lint": "node --check src/*.js bin/*.js"
   },
   "repository": {

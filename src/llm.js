@@ -236,13 +236,109 @@ async function reviewCode(diff, config = {}) {
   }
 }
 
+/**
+ * Build the fix prompt from diff and review issues.
+ * @param {string} diff
+ * @param {object[]} issues - Review issues found
+ * @returns {string}
+ */
+function buildFixPrompt(diff, issues) {
+  const issuesText = issues.map((issue, i) =>
+    `${i + 1}. [${issue.severity}] ${issue.file}:${issue.line || '?'} — ${issue.message}${issue.suggestion ? ` (suggestion: ${issue.suggestion})` : ''}`
+  ).join('\n');
+
+  return `You are an expert code fixer. Given a git diff and a list of review issues, generate fixes for each issue.
+
+Review Issues:
+${issuesText}
+
+Diff:
+\`\`\`
+${diff}
+\`\`\`
+
+Output ONLY a JSON array of fixes. Each fix must have:
+- "file": file path (string)
+- "original": the original code snippet that needs to be replaced (exact match from the file, multi-line string)
+- "fixed": the corrected code snippet to replace it with (multi-line string)
+- "explanation": brief explanation of what was fixed
+
+If no fixes can be generated, return an empty array: []
+Important: The "original" field must contain the EXACT text as it appears in the file so it can be found and replaced.`;
+}
+
+/**
+ * Parse LLM fix response into structured fixes array.
+ * @param {string} text
+ * @returns {object[]}
+ */
+function parseFixResponse(text) {
+  const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/) || [null, text];
+  const jsonStr = jsonMatch[1].trim();
+
+  try {
+    const parsed = JSON.parse(jsonStr);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(fix =>
+      fix.file && fix.original !== undefined && fix.fixed !== undefined
+    );
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Generate fixes for review issues using LLM.
+ * @param {string} diff
+ * @param {object[]} issues - Review issues
+ * @param {{ apiKey?: string, deepseekApiKey?: string, model?: string }} config
+ * @returns {Promise<{ fixes: object[], model: string }>}
+ */
+async function generateFix(diff, issues, config = {}) {
+  if (!issues || issues.length === 0) {
+    return { fixes: [], model: 'none' };
+  }
+
+  const primaryModel = config.model || 'gemini';
+  const fallbackModel = primaryModel === 'gemini' ? 'deepseek' : 'gemini';
+  const prompt = buildFixPrompt(diff, issues);
+
+  try {
+    const response = await callLLM(prompt, primaryModel, config);
+    const fixes = parseFixResponse(response);
+    return { fixes, model: primaryModel };
+  } catch (primaryErr) {
+    console.error(`${primaryModel} failed for fix generation: ${primaryErr.message}`);
+
+    const fallbackKey = fallbackModel === 'deepseek'
+      ? (config.deepseekApiKey || process.env.DEEPSEEK_API_KEY)
+      : (config.apiKey || process.env.GEMINI_API_KEY);
+
+    if (!fallbackKey) throw primaryErr;
+
+    console.error(`Falling back to ${fallbackModel} for fix generation...`);
+    try {
+      const response = await callLLM(prompt, fallbackModel, config);
+      const fixes = parseFixResponse(response);
+      return { fixes, model: fallbackModel };
+    } catch (fallbackErr) {
+      throw new Error(
+        `Both models failed for fix generation. ${primaryModel}: ${primaryErr.message}; ${fallbackModel}: ${fallbackErr.message}`
+      );
+    }
+  }
+}
+
 module.exports = {
   reviewCode,
+  generateFix,
   buildPrompt,
+  buildFixPrompt,
   callGemini,
   callDeepSeek,
   callLLM,
   parseResponse,
+  parseFixResponse,
   GEMINI_ENDPOINT,
   DEEPSEEK_ENDPOINT,
 };

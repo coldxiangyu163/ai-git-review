@@ -4,6 +4,6 @@
 const { main } = require('../src/index');
 
 main().catch((err) => {
-  console.error('ai-review error:', err.message);
+  console.error(`\n  \x1b[31m✖ ai-review error:\x1b[0m ${err.message}\n`);
   process.exit(1);
 });

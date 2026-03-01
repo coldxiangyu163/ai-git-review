@@ -8,6 +8,7 @@ const DEFAULTS = {
   rules: [],
   language: 'zh',
   maxFileSize: 10000,
+  ignore: [],
 };
 
 /**
@@ -19,7 +20,13 @@ function loadConfig() {
   try {
     if (fs.existsSync(configPath)) {
       const raw = fs.readFileSync(configPath, 'utf-8');
-      return { ...DEFAULTS, ...JSON.parse(raw) };
+      const parsed = JSON.parse(raw);
+      // Validate model field
+      if (parsed.model && !['gemini', 'deepseek'].includes(parsed.model)) {
+        console.warn(`  ⚠ Unknown model "${parsed.model}", falling back to "gemini"`);
+        parsed.model = 'gemini';
+      }
+      return { ...DEFAULTS, ...parsed };
     }
   } catch {
     // ignore parse errors, use defaults

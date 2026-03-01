@@ -1,13 +1,14 @@
 {
   "name": "ai-git-review",
-  "version": "0.1.0",
-  "description": "Free AI-powered code review on git commit",
+  "version": "0.2.0",
+  "description": "Free AI-powered code review on every git commit. Supports Gemini (free) and DeepSeek with automatic fallback.",
   "main": "src/index.js",
   "bin": {
     "ai-review": "./bin/ai-review.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/git.test.js && node test/llm.test.js",
+    "lint": "node --check src/*.js bin/*.js"
   },
   "repository": {
     "type": "git",
@@ -18,12 +19,26 @@
     "code-review",
     "git-hooks",
     "gemini",
-    "free"
+    "deepseek",
+    "free",
+    "cli",
+    "pre-commit",
+    "llm",
+    "code-quality"
   ],
   "author": "coldxiangyu",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/coldxiangyu163/ai-git-review/issues"
   },
-  "homepage": "https://github.com/coldxiangyu163/ai-git-review#readme"
+  "homepage": "https://github.com/coldxiangyu163/ai-git-review#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "README.md",
+    "LICENSE"
+  ]
 }

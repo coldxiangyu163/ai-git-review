@@ -1,0 +1,32 @@
+# Tests
+test/
+
+# Git
+.git/
+.gitignore
+
+# Config
+.ai-review.json
+.github/
+
+# Dev files
+*.test.js
+*.spec.js
+.eslintrc*
+.prettierrc*
+.editorconfig
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Misc
+node_modules/
+coverage/
+*.log

@@ -5,9 +5,18 @@ test/
 .git/
 .gitignore
 
+# GitHub
+.github/
+
+# Docs (README.md is included via package.json "files")
+docs/
+CHANGELOG.md
+CONTRIBUTING.md
+*.md
+!README.md
+
 # Config
 .ai-review.json
-.github/
 
 # Dev files
 *.test.js
@@ -30,3 +39,4 @@ Thumbs.db
 node_modules/
 coverage/
 *.log
+*.tgz

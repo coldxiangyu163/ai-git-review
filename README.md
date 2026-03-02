@@ -1,10 +1,11 @@
 # ai-git-review
 
-Free AI-powered code review on every git commit.
+> 🤖 Free AI-powered code review on every git commit — zero config, zero cost.
 
-[![npm](https://img.shields.io/npm/v/ai-git-review)](https://npmjs.com/package/ai-git-review)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
+[![npm version](https://img.shields.io/npm/v/ai-git-review)](https://www.npmjs.com/package/ai-git-review)
+[![license](https://img.shields.io/github/license/coldxiangyu163/ai-git-review)](LICENSE)
+[![node](https://img.shields.io/node/v/ai-git-review)](https://nodejs.org/)
+[![npm downloads](https://img.shields.io/npm/dm/ai-git-review)](https://www.npmjs.com/package/ai-git-review)
 
 ## Features
 
@@ -15,6 +16,25 @@ Free AI-powered code review on every git commit.
 - 🔧 **Auto-fix mode** — AI generates and applies fixes for detected issues
 - ⚙️ **Configurable rules** — customize review focus via `.ai-review.json`
 - 🪝 **Git hooks integration** — auto-review on `pre-commit`
+
+## Quick Start
+
+```bash
+# 1. Install globally
+npm install -g ai-git-review
+
+# 2. Set your free Gemini API key
+export GEMINI_API_KEY="your-key"   # Get it free: https://aistudio.google.com/apikey
+
+# 3. Review your staged changes
+git add .
+ai-review
+
+# 4. (Optional) Auto-fix issues
+ai-review --fix
+```
+
+That's it! No config files needed. 🎉
 
 ## How It Works
 

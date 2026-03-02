@@ -2,8 +2,9 @@
 
 Free AI-powered code review on every git commit.
 
-[![npm version](https://img.shields.io/npm/v/ai-git-review.svg)](https://www.npmjs.com/package/ai-git-review)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![npm](https://img.shields.io/npm/v/ai-git-review)](https://npmjs.com/package/ai-git-review)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
 
 ## Features
 
@@ -14,6 +15,22 @@ Free AI-powered code review on every git commit.
 - 🔧 **Auto-fix mode** — AI generates and applies fixes for detected issues
 - ⚙️ **Configurable rules** — customize review focus via `.ai-review.json`
 - 🪝 **Git hooks integration** — auto-review on `pre-commit`
+
+## How It Works
+
+```
+┌─────────────┐     ┌──────────────┐     ┌─────────────┐     ┌──────────────┐
+│  git add .   │ ──▶ │  Parse staged │ ──▶ │  Send diff   │ ──▶ │  Colorized   │
+│  ai-review   │     │  diff chunks  │     │  to LLM API  │     │  terminal    │
+└─────────────┘     └──────────────┘     └─────────────┘     │  output      │
+                                                              └──────────────┘
+```
+
+1. **Stage your changes** — `git add .`
+2. **Run `ai-review`** — parses the staged diff into file-level chunks
+3. **LLM analysis** — sends chunks to Gemini (or DeepSeek fallback) for review
+4. **Terminal output** — issues are printed with severity, line numbers, and suggestions
+5. *(Optional)* **Auto-fix** — AI generates patches, previews diffs, and applies fixes
 
 ## Installation
 
@@ -73,14 +90,6 @@ ai-review --fix --yes
 ai-review --fix --dry-run
 ```
 
-**How it works:**
-
-1. AI reviews your staged changes and finds issues
-2. AI generates code fixes for each issue
-3. Fixes are previewed in the terminal with colorized diff
-4. You confirm (or skip with `--yes`)
-5. Fixes are applied to your files (backups created as `.bak`)
-
 ### Install as git hook
 
 ```bash
@@ -101,6 +110,67 @@ ai-review --config
 ai-review --help
 ```
 
+## Output Example
+
+### Review mode
+
+```
+$ ai-review
+
+  ┌──────────────────────────────────────────┐
+  │  ai-git-review v0.2.0                    │
+  │  Reviewing 3 file(s) with gemini...      │
+  └──────────────────────────────────────────┘
+
+  src/index.js
+    ✖ error:5    Potential null reference — user may be undefined
+                 → Add null check before accessing property
+
+    ⚠ warning:12 Magic number used in comparison
+                 → Extract to named constant for readability
+
+  src/utils.js
+    ⚠ warning:8  Unused variable 'temp'
+                 → Remove or use the declared variable
+
+  ──────────────────────────────────────────
+  2 errors  1 warning  │  3 file(s) reviewed
+
+  ✖ Commit blocked — fix errors first
+```
+
+### Fix mode
+
+```
+$ ai-review --fix
+
+  (review output as above...)
+
+  🔧 Generating fixes...
+
+  ┌─ Fix 1/2 ─────────────────────────────┐
+  │ src/index.js:5                         │
+  │ Add null check before accessing prop   │
+  ├────────────────────────────────────────┤
+  │ - const name = user.name;              │
+  │ + const name = user?.name;             │
+  └────────────────────────────────────────┘
+
+  ┌─ Fix 2/2 ─────────────────────────────┐
+  │ src/index.js:12                        │
+  │ Extract magic number to constant       │
+  ├────────────────────────────────────────┤
+  │ - if (retries > 3) {                   │
+  │ + const MAX_RETRIES = 3;               │
+  │ + if (retries > MAX_RETRIES) {         │
+  └────────────────────────────────────────┘
+
+  Apply these fixes? (y/N) y
+
+  ✅ 2 fix(es) applied, 0 skipped.
+  📦 Backups created: 2 file(s) (.bak)
+```
+
 ## Configuration
 
 Create a `.ai-review.json` in your project root:
@@ -119,6 +189,12 @@ Create a `.ai-review.json` in your project root:
     "*.spec.ts"
   ]
 }
+```
+
+Or generate a default config interactively:
+
+```bash
+ai-review --init
 ```
 
 ### Model Options
@@ -144,7 +220,7 @@ Both API keys must be set for fallback to work.
 | `--fix` | Enable auto-fix mode: review → generate fixes → apply |
 | `--dry-run` | Preview fixes without applying (use with `--fix`) |
 | `--yes`, `-y` | Skip confirmation prompt (use with `--fix`) |
-| `--init` | Install pre-commit git hook |
+| `--init` | Install pre-commit git hook + generate config |
 | `--config` | Show current configuration |
 | `--help`, `-h` | Show help message |
 
@@ -156,60 +232,19 @@ Both API keys must be set for fallback to work.
 | `DEEPSEEK_API_KEY` | DeepSeek API key (optional fallback) | — |
 | `AI_REVIEW_MODEL` | Model to use | `gemini` |
 
-## Output Example
-
-### Review mode
-
-```
-  Reviewing 3 file(s)...
-
-  src/index.js
-    ✖ error:5  Potential null reference
-      → Add null check before accessing property
-
-    ⚠ warning:12  Magic number
-      → Extract to named constant
-
-  1 error  1 warning
-
-  ✖ Commit blocked — fix errors first
-```
-
-### Fix mode
-
-```
-  Reviewing 3 file(s)...
-
-  (review output...)
-
-  🔧 Generating fixes...
-
-  Proposed Fixes (2)
-
-  Fix 1: src/index.js
-  Add null check before accessing property
-
-  - const name = user.name;
-  + const name = user?.name;
-
-  Fix 2: src/index.js
-  Extract magic number to named constant
-
-  - if (retries > 3) {
-  + const MAX_RETRIES = 3;
-  + if (retries > MAX_RETRIES) {
-
-  Apply these fixes? (y/N) y
-
-  ✅ 2 fix(es) applied, 0 skipped.
-  📦 Backups created: 2 file(s) (.bak)
-```
-
 ## Requirements
 
 - Node.js >= 18.0.0
 - Git
 
+## Contributing
+
+1. Fork the repo
+2. Create your feature branch (`git checkout -b feat/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feat/amazing-feature`)
+5. Open a Pull Request
+
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) © coldxiangyu

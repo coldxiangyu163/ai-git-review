@@ -2,6 +2,7 @@
 
 > 🤖 Free AI-powered code review on every git commit — zero config, zero cost.
 
+[![CI](https://github.com/coldxiangyu163/ai-git-review/actions/workflows/ci.yml/badge.svg)](https://github.com/coldxiangyu163/ai-git-review/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/ai-git-review)](https://www.npmjs.com/package/ai-git-review)
 [![license](https://img.shields.io/github/license/coldxiangyu163/ai-git-review)](LICENSE)
 [![node](https://img.shields.io/node/v/ai-git-review)](https://nodejs.org/)

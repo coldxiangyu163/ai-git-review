@@ -38,19 +38,15 @@ That's it! No config files needed. 🎉
 
 ## How It Works
 
-```
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐     ┌──────────────┐
-│  git add .   │ ──▶ │  Parse staged │ ──▶ │  Send diff   │ ──▶ │  Colorized   │
-│  ai-review   │     │  diff chunks  │     │  to LLM API  │     │  terminal    │
-└─────────────┘     └──────────────┘     └─────────────┘     │  output      │
-                                                              └──────────────┘
-```
+<p align="center">
+  <img src="docs/how-it-works.svg" alt="How ai-git-review works" width="100%" />
+</p>
 
 1. **Stage your changes** — `git add .`
 2. **Run `ai-review`** — parses the staged diff into file-level chunks
-3. **LLM analysis** — sends chunks to Gemini (or DeepSeek fallback) for review
+3. **LLM analysis** — sends chunks to Gemini (free) or DeepSeek (fallback) for review
 4. **Terminal output** — issues are printed with severity, line numbers, and suggestions
-5. *(Optional)* **Auto-fix** — AI generates patches, previews diffs, and applies fixes
+5. *(Optional)* **Auto-fix** — `--fix` generates patches, previews diffs, and applies fixes
 
 ## Installation
 

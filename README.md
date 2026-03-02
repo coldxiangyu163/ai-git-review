@@ -39,7 +39,7 @@ That's it! No config files needed. 🎉
 ## How It Works
 
 <p align="center">
-  <img src="docs/how-it-works.svg" alt="How ai-git-review works" width="100%" />
+  <img src="docs/how-it-works.png" alt="How ai-git-review works" width="600" />
 </p>
 
 1. **Stage your changes** — `git add .`

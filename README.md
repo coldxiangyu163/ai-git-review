@@ -2,11 +2,24 @@
 
 > 🤖 Free AI-powered code review on every git commit — zero config, zero cost.
 
+[![npm version](https://img.shields.io/npm/v/ai-git-review.svg)](https://www.npmjs.com/package/ai-git-review)
+[![npm downloads](https://img.shields.io/npm/dm/ai-git-review.svg)](https://www.npmjs.com/package/ai-git-review)
+[![license](https://img.shields.io/npm/l/ai-git-review.svg)](https://github.com/coldxiangyu163/ai-git-review/blob/main/LICENSE)
 [![CI](https://github.com/coldxiangyu163/ai-git-review/actions/workflows/ci.yml/badge.svg)](https://github.com/coldxiangyu163/ai-git-review/actions/workflows/ci.yml)
-[![npm version](https://img.shields.io/npm/v/ai-git-review)](https://www.npmjs.com/package/ai-git-review)
-[![license](https://img.shields.io/github/license/coldxiangyu163/ai-git-review)](LICENSE)
 [![node](https://img.shields.io/node/v/ai-git-review)](https://nodejs.org/)
-[![npm downloads](https://img.shields.io/npm/dm/ai-git-review)](https://www.npmjs.com/package/ai-git-review)
+
+## 📦 Installation
+
+```bash
+npm install -g ai-git-review
+```
+
+Get your free Gemini API key: https://aistudio.google.com/apikey
+
+```bash
+export GEMINI_API_KEY="your-key"
+ai-review
+```
 
 ## Features
 

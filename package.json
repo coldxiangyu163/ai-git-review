@@ -1,6 +1,6 @@
 {
   "name": "ai-git-review",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Free AI-powered code review on every git commit. Supports Gemini (free) and DeepSeek with automatic fallback.",
   "main": "src/index.js",
   "bin": {
